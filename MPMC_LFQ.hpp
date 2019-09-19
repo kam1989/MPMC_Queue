@@ -15,7 +15,6 @@ namespace MPMC_LFQ {
 		Node* next = NULL;
 		void* data = NULL;
 		Node* nextGarbage = NULL;
-		bool dummyflag = false;
 	};
 
 
@@ -149,10 +148,7 @@ namespace MPMC_LFQ {
 	public:
 		LF_queue() {
 			Node* temp = new Node;
-			temp->dummyflag = true;
 
-			dummy = temp;
-			dummyBackup = temp;
 			pos_push = temp;
 			pos_pop = temp;
 		}
@@ -182,9 +178,10 @@ namespace MPMC_LFQ {
 
 		void push(T* pushData) {
 			Node* temp = new Node;
-			temp->data = pushData;
-			temp->next = NULL;
-			pos_push.exchange(temp)->next = temp;
+			Node* temp2 = pos_push.exchange(temp);
+			temp2->data = pushData;
+			temp2->next = temp;
+
 		}
 
 		void pushWithRecycle(T* pushData, int n) {
@@ -204,9 +201,9 @@ namespace MPMC_LFQ {
 				temp = new Node;
 			}
 
-			temp->data = pushData;
-			temp->next = NULL;
-			pos_push.exchange(temp)->next = temp;
+			Node* temp2 = pos_push.exchange(temp);
+			temp2->data = pushData;
+			temp2->next = temp;
 		}
 
 		bool freeGarbage(int n) {
@@ -228,27 +225,16 @@ namespace MPMC_LFQ {
 			while (true) {
 				hazardCare.updateHazard(&temp, &pos_pop, hazardArrayNum);
 				if (temp->next == NULL) {
-					if (temp->dummyflag) {
-						hazardCare.resetHazard(hazardArrayNum);
 						return false;
-					}
-					push_dummy();
-					continue;
 				}
 
 				temp2 = temp->next;
 				if (pos_pop.compare_exchange_weak(temp, temp2)) {
 					temp->next = NULL;
-					if (temp->dummyflag) {
-						dummy = temp;
-						continue;
-					}
-					else {
-						*r = (T*)temp->data;
-						garbageCare.push(temp, hazardArrayNum);
-						hazardCare.resetHazard(hazardArrayNum);
-						return true;
-					}
+					*r = (T*)temp->data;
+					garbageCare.push(temp, hazardArrayNum);
+					hazardCare.resetHazard(hazardArrayNum);
+					return true;
 				}
 			}
 		}
@@ -256,26 +242,12 @@ namespace MPMC_LFQ {
 
 	private:
 
-		std::atomic<Node*> dummy = NULL;
-		std::atomic<Node*> dummyBackup = NULL;
-
 		std::atomic<Node*> pos_push = NULL;
 		std::atomic<Node*> pos_pop = NULL;
 
 		HazardCare<size> hazardCare;
 		GarbageCare<size> garbageCare = GarbageCare<size>(3000);
 		NumberPool<size> numberPool;
-
-		void push_dummy() {
-			Node* temp = NULL;
-			if (dummy != NULL) {
-				temp = dummy.exchange(NULL);
-			}
-			if (temp != NULL) {
-				temp->next = NULL;
-				pos_push.exchange(temp)->next = temp;
-			}
-		}
 	};
 }
 
