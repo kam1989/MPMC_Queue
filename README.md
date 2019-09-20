@@ -15,7 +15,58 @@ push 시도할때 얼마나 빨리 완료되는가, 빼낼 데이터가 있을�
 
 MPMC_LFQueue:
 
-MPMC_LFQ
+MPMC_LFQ(remove dummy ver)
+
+-		popRecs	0x000001c3b6e30010 {min=14 max=882196 total=857482668 ...}	st_recode *
+		min	14	__int64
+		max	882196	__int64
+		total	857482668	__int64
+		count	10000000	__int64
+-		pushRecs	0x000001c3b6d593f0 {min=14 max=862043 total=866786207 ...}	st_recode *
+		min	14	__int64
+		max	862043	__int64
+		total	866786207	__int64
+		count	10000000	__int64
+		
+-		popRecs	0x000002434f869440 {min=14 max=844886 total=874401822 ...}	st_recode *
+		min	14	__int64
+		max	844886	__int64
+		total	874401822	__int64
+		count	10000000	__int64
+-		pushRecs	0x000002434f869080 {min=14 max=902258 total=863727235 ...}	st_recode *
+		min	14	__int64
+		max	902258	__int64
+		total	863727235	__int64
+		count	10000000	__int64
+		
+-		popRecs	0x0000029bfc38e9d0 {min=14 max=871605 total=895649888 ...}	st_recode *
+		min	14	__int64
+		max	871605	__int64
+		total	895649888	__int64
+		count	10000000	__int64
+-		pushRecs	0x0000029bfc389c80 {min=14 max=931112 total=851281634 ...}	st_recode *
+		min	14	__int64
+		max	931112	__int64
+		total	851281634	__int64
+		count	10000000	__int64
+
+-		popRecs	0x0000026adf594eb0 {min=14 max=973980 total=866379871 ...}	st_recode *
+		min	14	__int64
+		max	973980	__int64
+		total	866379871	__int64
+		count	10000000	__int64
+-		pushRecs	0x0000026adf599c30 {min=14 max=895027 total=878260264 ...}	st_recode *
+		min	14	__int64
+		max	895027	__int64
+		total	878260264	__int64
+		count	10000000	__int64
+
+나열된 일부 데이터들처럼 86xxxxxxx ~ 89xxxxxxx 사이에서 측정됨.
+
+garbageCare 에다 미리 메모리를 할당하든 그렇지 않았든 별 차이는 없었음.
+
+
+MPMC_LFQ(old ver)
 
 -		popRecs	0x000001d7268d8020 {min=14 max=1460592 total=884103339 ...}	st_recode *
 		min	14	__int64
